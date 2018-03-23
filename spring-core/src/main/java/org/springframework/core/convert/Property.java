@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -211,7 +211,7 @@ public final class Property {
 			addAnnotationsToMap(annotationMap, getReadMethod());
 			addAnnotationsToMap(annotationMap, getWriteMethod());
 			addAnnotationsToMap(annotationMap, getField());
-			annotations = annotationMap.values().toArray(new Annotation[annotationMap.size()]);
+			annotations = annotationMap.values().toArray(new Annotation[0]);
 			annotationCache.put(this, annotations);
 		}
 		return annotations;
@@ -239,11 +239,9 @@ public final class Property {
 			field = ReflectionUtils.findField(declaringClass, name);
 			if (field == null) {
 				// Same lenient fallback checking as in CachedIntrospectionResults...
-				field = ReflectionUtils.findField(declaringClass,
-						name.substring(0, 1).toLowerCase() + name.substring(1));
+				field = ReflectionUtils.findField(declaringClass, StringUtils.uncapitalize(name));
 				if (field == null) {
-					field = ReflectionUtils.findField(declaringClass,
-							name.substring(0, 1).toUpperCase() + name.substring(1));
+					field = ReflectionUtils.findField(declaringClass, StringUtils.capitalize(name));
 				}
 			}
 		}

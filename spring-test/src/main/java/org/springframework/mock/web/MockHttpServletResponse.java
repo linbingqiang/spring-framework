@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -199,12 +199,10 @@ public class MockHttpServletResponse implements HttpServletResponse {
 	}
 
 	public byte[] getContentAsByteArray() {
-		flushBuffer();
 		return this.content.toByteArray();
 	}
 
 	public String getContentAsString() throws UnsupportedEncodingException {
-		flushBuffer();
 		return (this.characterEncoding != null ?
 				this.content.toString(this.characterEncoding) : this.content.toString());
 	}
@@ -311,7 +309,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
 	@Override
 	public void setLocale(Locale locale) {
 		this.locale = locale;
-		doAddHeaderValue(HttpHeaders.ACCEPT_LANGUAGE, locale.toLanguageTag(), true);
+		doAddHeaderValue(HttpHeaders.CONTENT_LANGUAGE, locale.toLanguageTag(), true);
 	}
 
 	@Override
@@ -359,7 +357,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
 	}
 
 	public Cookie[] getCookies() {
-		return this.cookies.toArray(new Cookie[this.cookies.size()]);
+		return this.cookies.toArray(new Cookie[0]);
 	}
 
 	@Nullable
@@ -591,11 +589,11 @@ public class MockHttpServletResponse implements HttpServletResponse {
 					Integer.parseInt(value.toString()));
 			return true;
 		}
-		else if (HttpHeaders.ACCEPT_LANGUAGE.equalsIgnoreCase(name)) {
+		else if (HttpHeaders.CONTENT_LANGUAGE.equalsIgnoreCase(name)) {
 			HttpHeaders headers = new HttpHeaders();
-			headers.add(HttpHeaders.ACCEPT_LANGUAGE, value.toString());
-			List<Locale> locales = headers.getAcceptLanguageAsLocales();
-			this.locale = (!locales.isEmpty() ? locales.get(0) : Locale.getDefault());
+			headers.add(HttpHeaders.CONTENT_LANGUAGE, value.toString());
+			Locale language = headers.getContentLanguage();
+			this.locale = language != null ? language : Locale.getDefault();
 			return true;
 		}
 		else {
@@ -719,7 +717,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
 		}
 
 		@Override
-		public void write(char buf[], int off, int len) {
+		public void write(char[] buf, int off, int len) {
 			super.write(buf, off, len);
 			super.flush();
 			setCommittedIfBufferSizeExceeded();

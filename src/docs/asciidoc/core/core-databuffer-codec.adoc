@@ -145,8 +145,12 @@ It contains methods for reading a `Flux` of `DataBuffer` objects from an `InputS
 `DataBufferUtils` also exposes `retain` and `release` methods that operate on plain `DataBuffer`
 instances (so that casting to a `PooledDataBuffer` is not required).
 
-
-
+Additionally, `DataBufferUtils` exposes `compose`, which merges a stream of data buffers into one.
+For instance, this method can be used to convert the entire HTTP body into a single buffer (and
+from that, a `String`, or `InputStream`).
+This is particularly useful when dealing with older, blocking APIs.
+Note, however, that this puts the entire body in memory, and therefore uses more memory than a pure
+streaming solution would.
 
 [codecs]
 == Codecs
@@ -160,7 +164,7 @@ Note that a decoder instance needs to consider <<databuffer-reference-counting, 
 
 Spring comes with a wide array of default codecs, capable of converting from/to `String`,
 `ByteBuffer`, byte arrays, and also codecs that support marshalling libraries such as JAXB and
-Jackson.
+Jackson (with https://github.com/FasterXML/jackson-core/issues/57[Jackson 2.9+ support for non-blocking parsing]).
 Withing the context of Spring WebFlux, codecs are used to convert the request body into a
 `@RequestMapping` parameter, or to convert the return type into the response body that is sent back
 to the client.
