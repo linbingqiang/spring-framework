@@ -518,6 +518,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			// 初始化BeanFactory
+			// 在这一步中，Spring将配置文件中的配置信息装入容器的bean定义注册表中(BeanDefinitionRegistry), 但并未实例化Bean
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
